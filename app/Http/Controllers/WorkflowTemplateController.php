@@ -464,6 +464,7 @@ class WorkflowTemplateController extends Controller
             'sections.*.steps.*.dependency' => 'required|in:ALL_COMPLETED,ANY_COMPLETED,SELECTED_COMPLETED',
             'sections.*.steps.*.dependency_steps' => 'array',
             'sections.*.steps.*.is_entry_point' => 'nullable',
+            'sections.*.steps.*.record_id' => 'nullable|integer',
 
             'sections.*.steps.*.maker_escalation_user_id' => 'nullable|exists:users,id',
             'sections.*.steps.*.maker_turn_around_time_day' => 'nullable|integer|min:0',
@@ -536,7 +537,8 @@ class WorkflowTemplateController extends Controller
         ]);
     }
 
-    public static function stringToInt($array) {
+    public static function stringToInt($array)
+    {
         return array_map('intval', $array);
     }
 }
