@@ -404,23 +404,23 @@
                 sections[sectionId] = sectionData;
 
                 const sectionItem = $(`
-                        <div class="section-item" data-section-id="${sectionId}">
-                            <div class="d-flex align-items-center p-3">
-                                <div class="section-drag-handle me-2">
-                                    <i class="bi bi-grip-vertical"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold section-name">New Section</div>
-                                    <div class="section-code text-muted">NEW_SECTION</div>
-                                    <div class="text-muted small section-description">No description provided</div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="section-steps-count">0 steps</span>
-                                        <span class="section-number">Section ${sectionNumber}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `);
+                                                <div class="section-item" data-section-id="${sectionId}">
+                                                    <div class="d-flex align-items-center p-3">
+                                                        <div class="section-drag-handle me-2">
+                                                            <i class="bi bi-grip-vertical"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold section-name">New Section</div>
+                                                            <div class="section-code text-muted">NEW_SECTION</div>
+                                                            <div class="text-muted small section-description">No description provided</div>
+                                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                                <span class="section-steps-count">0 steps</span>
+                                                                <span class="section-number">Section ${sectionNumber}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `);
 
                 $('#sectionsContainer').append(sectionItem);
                 sectionItem.click(function () {
@@ -447,203 +447,235 @@
                 renderSectionDetails(section);
             }
 
+            function getStepDisplayName(step, field) {
+                const fieldMappings = {
+                    'department': { nested: 'department', flat: 'department_name', prop: 'name' },
+                    'checklist': { nested: 'checklist', flat: 'checklist_name', prop: 'name' },
+                    'user': { nested: 'user', flat: 'user_name', prop: 'name', fullName: true },
+                    'checker': { nested: 'checker', flat: 'checker_name', prop: 'name', fullName: true },
+                    'makerEscalationUser': { nested: 'makerEscalationUser', flat: 'maker_escalation_user_name', prop: 'name', fullName: true },
+                    'checkerEscalationUser': { nested: 'checkerEscalationUser', flat: 'checker_escalation_user_name', prop: 'name', fullName: true },
+                    'makerEscalationEmailNotification': { nested: 'makerEscalationEmailNotification', flat: 'maker_escalation_email_name', prop: 'name' },
+                    'makerEscalationPushNotification': { nested: 'makerEscalationPushNotification', flat: 'maker_escalation_push_name', prop: 'name' },
+                    'checkerEscalationEmailNotification': { nested: 'checkerEscalationEmailNotification', flat: 'checker_escalation_email_name', prop: 'name' },
+                    'checkerEscalationPushNotification': { nested: 'checkerEscalationPushNotification', flat: 'checker_escalation_push_name', prop: 'name' }
+                };
+
+                const mapping = fieldMappings[field];
+                if (!mapping) return '';
+
+                if (step[mapping.flat]) {
+                    return step[mapping.flat];
+                }
+
+                if (step[mapping.nested]) {
+                    if (mapping.fullName && step[mapping.nested]) {
+                        const obj = step[mapping.nested];
+                        return `${obj.employee_id || ''} - ${obj.name || ''} ${obj.middle_name || ''} ${obj.last_name || ''}`.trim();
+                    }
+                    return step[mapping.nested][mapping.prop] || '';
+                }
+
+                return '';
+            }
+
             function renderStepsForSection(section) {
                 if (section.steps.length === 0) {
                     return `
-                            <div class="text-center py-4 text-muted">
-                                <i class="bi bi-list-ol" style="font-size: 2rem;"></i>
-                                <p class="mt-2 mb-0">No steps added yet. Click "Add Step" to get started.</p>
-                            </div>
-                        `;
+                                                    <div class="text-center py-4 text-muted">
+                                                        <i class="bi bi-list-ol" style="font-size: 2rem;"></i>
+                                                        <p class="mt-2 mb-0">No steps added yet. Click "Add Step" to get started.</p>
+                                                    </div>
+                                                `;
                 }
 
                 return section.steps.map(step => `
-                        <div class="step-card mb-3" data-step-id="${step.id}">
-                            ${!isNaN(step.id) && step.id > 0 ? ('<input type="hidden" name="sections[' + section.id + '][steps][' + step.id + '][record_id]" value="' + step.id + '"/>') : ''}
-                            <div class="card border-0 shadow-sm step-item">
-                                <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <span class="step-number badge bg-white text-primary me-2">S${step.globalNumber}</span>
-                                        <h6 class="mb-0">Step ${step.globalNumber}</h6>
-                                        <h5 class="mb-0 nearest-step-heading"></h5>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <div class="form-check form-switch me-4">
-                                            <label class="form-check-label" for="switchCheckChecked-${step.id}"> Entry Point </label>
-                                            <input class="form-check-input" type="checkbox" role="switch" id="switchCheckChecked-${step.id}" name="sections[${section.id}][steps][${step.id}][is_entry_point]" ${step.is_entry_point ? 'checked' : ''}>
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-outline-light me-2 drag-handle">
-                                            <i class="bi bi-grip-vertical"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-light btn-danger remove-step" data-step-id="${step.id}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Step Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control step-name" name="sections[${section.id}][steps][${step.id}][step_name]" value="${step.step_name || ''}" required>
-                                            <input type="hidden" class="step-input" name="sections[${section.id}][steps][${step.id}][step]" value="${step.globalNumber}">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
-                                            <select class="form-select select2" data-whichselect="departments-list" id="step-${step.id}-department_id" name="sections[${section.id}][steps][${step.id}][department_id]" required>
-                                                ${step.department_id ? `<option value="${step.department_id}" selected>${step.department.name || 'Selected Department'}</option>` : ''}
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Checklist <span class="text-danger">*</span></label>
-                                            <select class="form-select select2" data-whichselect="checklists-list" id="step-${step.id}-checklist_id" name="sections[${section.id}][steps][${step.id}][checklist_id]" required>
-                                                ${step.checklist_id ? `<option value="${step.checklist_id}" selected>${step.checklist.name || 'Selected Checklist'}</option>` : ''}
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-12">
-                                            <label class="form-label fw-semibold">Checklist Description</label>
-                                            <textarea class="form-control" name="sections[${section.id}][steps][${step.id}][checklist_description]" rows="2" placeholder="Describe what needs to be done...">${step.checklist_description || ''}</textarea>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Trigger</label>
-                                            <select class="form-select select2" name="sections[${section.id}][steps][${step.id}][trigger]" required>
-                                                <option value="0" ${step.trigger == 0 ? 'selected' : ''}>Auto</option>
-                                                <option value="1" ${step.trigger == 1 ? 'selected' : ''}>Manual</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Dependency</label>
-                                            <select class="form-select dependency-select select2" name="sections[${section.id}][steps][${step.id}][dependency]" required>
-                                                <option value="ALL_COMPLETED" ${step.dependency == 'ALL_COMPLETED' ? 'selected' : ''}>All Previous Steps</option>
-                                                <option value="SELECTED_COMPLETED" ${step.dependency == 'SELECTED_COMPLETED' ? 'selected' : ''}>Selected Steps</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 dependency-steps-container ${step.dependency == 'SELECTED_COMPLETED' ? '' : 'd-none'}">
-                                            <label class="form-label fw-semibold">Select Dependent Steps</label>
-                                            <select class="form-select dep-steps select2" multiple name="sections[${section.id}][steps][${step.id}][dependency_steps][]" data-step-id="${step.id}">
-                                                ${generateDependencyStepsOptions(step.id, step.dependency_steps || [])}
-                                            </select>
-                                            <div class="form-text">Choose which specific steps must be completed before this step can start.</div>
-                                        </div>
-
-                                        <div class="accordion" id="accordionExample-${step.id}">
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-maker-${step.id}" aria-expanded="true" aria-controls="collapse-maker-${step.id}">
-                                                        Maker
-                                                    </button>
-                                                </h2>
-                                                <div id="collapse-maker-${step.id}" class="accordion-collapse collapse" data-bs-parent="#accordionExample-${step.id}">
-                                                    <div class="accordion-body row">
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Maker <span class="text-danger">*</span></label>
-                                                            <select class="form-select select2" data-whichselect="maker-list" id="step-${step.id}-user_id" name="sections[${section.id}][steps][${step.id}][user_id]" required>
-                                                                ${step.user_id ? `<option value="${step.user_id}" selected>${step.user.employee_id || ''} - ${step.user.name || ''} ${step.user.middle_name || ''} ${step.user.last_name || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Turnaround Time <span class="text-danger">*</span></label>
-                                                            <div class="input-group">
-                                                                <span class="input-group-text">Days</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_turn_around_time_day]" placeholder="Enter days" value="${step.maker_turn_around_time_day || ''}">
-                                                                <span class="input-group-text">Hours</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_turn_around_time_hour]" placeholder="Enter hours" value="${step.maker_turn_around_time_hour || ''}">
+                                                <div class="step-card mb-3" data-step-id="${step.id}">
+                                                    ${!isNaN(step.id) && step.id > 0 ? ('<input type="hidden" name="sections[' + section.id + '][steps][' + step.id + '][record_id]" value="' + step.id + '"/>') : ''}
+                                                    <div class="card border-0 shadow-sm step-item">
+                                                        <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                                                            <div class="d-flex align-items-center">
+                                                                <span class="step-number badge bg-white text-primary me-2">S${step.globalNumber}</span>
+                                                                <h6 class="mb-0">Step ${step.globalNumber}</h6>
+                                                                <h5 class="mb-0 nearest-step-heading"></h5>
+                                                            </div>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="form-check form-switch me-4">
+                                                                    <label class="form-check-label" for="switchCheckChecked-${step.id}"> Entry Point </label>
+                                                                    <input class="form-check-input" type="checkbox" role="switch" id="switchCheckChecked-${step.id}" name="sections[${section.id}][steps][${step.id}][is_entry_point]" ${step.is_entry_point ? 'checked' : ''}>
+                                                                </div>
+                                                                <button type="button" class="btn btn-sm btn-outline-light me-2 drag-handle">
+                                                                    <i class="bi bi-grip-vertical"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-light btn-danger remove-step" data-step-id="${step.id}">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
                                                             </div>
                                                         </div>
-                                                        <hr class="mt-4 mb-4">
-                                                        <h5>Maker Escalation</h5>
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Escalation User</label>
-                                                            <select class="form-select select2" data-whichselect="escalation-maker-list" id="step-${step.id}-maker_escalation_user_id" name="sections[${section.id}][steps][${step.id}][maker_escalation_user_id]">
-                                                                ${step.maker_escalation_user_id ? `<option value="${step.maker_escalation_user_id}" selected>${step.makerEscalationUser.employee_id || ''} - ${step.makerEscalationUser.name || ''} ${step.makerEscalationUser.middle_name || ''} ${step.makerEscalationUser.last_name || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Escalation After</label>
-                                                            <div class="input-group">
-                                                                <span class="input-group-text">Days</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_escalation_after_day]" placeholder="Enter days" value="${step.maker_escalation_after_day || ''}">
-                                                                <span class="input-group-text">Hours</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_escalation_after_hour]" placeholder="Enter hours" value="${step.maker_escalation_after_hour || ''}">
+                                                        <div class="card-body">
+                                                            <div class="row g-3">
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label fw-semibold">Step Name <span class="text-danger">*</span></label>
+                                                                    <input type="text" class="form-control step-name" name="sections[${section.id}][steps][${step.id}][step_name]" value="${step.step_name || ''}" required>
+                                                                    <input type="hidden" class="step-input" name="sections[${section.id}][steps][${step.id}][step]" value="${step.globalNumber}">
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+                                                                    <select class="form-select select2" data-whichselect="departments-list" id="step-${step.id}-department_id" name="sections[${section.id}][steps][${step.id}][department_id]" required>
+                                                                    ${step.department_id ? `<option value="${step.department_id}" selected>${getStepDisplayName(step, 'department') || 'Selected Department'}</option>` : ''}
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label class="form-label fw-semibold">Checklist <span class="text-danger">*</span></label>
+                                                                    <select class="form-select select2" data-whichselect="checklists-list" id="step-${step.id}-checklist_id" name="sections[${section.id}][steps][${step.id}][checklist_id]" required>
+                                                                    ${step.checklist_id ? `<option value="${step.checklist_id}" selected>${getStepDisplayName(step, 'checklist') || 'Selected Checklist'}</option>` : ''}
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-12">
+                                                                    <label class="form-label fw-semibold">Checklist Description</label>
+                                                                    <textarea class="form-control" name="sections[${section.id}][steps][${step.id}][checklist_description]" rows="2" placeholder="Describe what needs to be done...">${step.checklist_description || ''}</textarea>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label fw-semibold">Trigger</label>
+                                                                    <select class="form-select select2" name="sections[${section.id}][steps][${step.id}][trigger]" required>
+                                                                        <option value="0" ${step.trigger == 0 ? 'selected' : ''}>Auto</option>
+                                                                        <option value="1" ${step.trigger == 1 ? 'selected' : ''}>Manual</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label fw-semibold">Dependency</label>
+                                                                    <select class="form-select dependency-select select2" name="sections[${section.id}][steps][${step.id}][dependency]" required>
+                                                                        <option value="ALL_COMPLETED" ${step.dependency == 'ALL_COMPLETED' ? 'selected' : ''}>All Previous Steps</option>
+                                                                        <option value="SELECTED_COMPLETED" ${step.dependency == 'SELECTED_COMPLETED' ? 'selected' : ''}>Selected Steps</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-12 dependency-steps-container ${step.dependency == 'SELECTED_COMPLETED' ? '' : 'd-none'}">
+                                                                    <label class="form-label fw-semibold">Select Dependent Steps</label>
+                                                                    <select class="form-select dep-steps select2" multiple name="sections[${section.id}][steps][${step.id}][dependency_steps][]" data-step-id="${step.id}">
+                                                                        ${generateDependencyStepsOptions(step.id, step.dependency_steps || [])}
+                                                                    </select>
+                                                                    <div class="form-text">Choose which specific steps must be completed before this step can start.</div>
+                                                                </div>
+
+                                                                <div class="accordion" id="accordionExample-${step.id}">
+                                                                    <div class="accordion-item">
+                                                                        <h2 class="accordion-header">
+                                                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-maker-${step.id}" aria-expanded="true" aria-controls="collapse-maker-${step.id}">
+                                                                                Maker
+                                                                            </button>
+                                                                        </h2>
+                                                                        <div id="collapse-maker-${step.id}" class="accordion-collapse collapse" data-bs-parent="#accordionExample-${step.id}">
+                                                                            <div class="accordion-body row">
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Maker <span class="text-danger">*</span></label>
+                                                                                    <select class="form-select select2" data-whichselect="maker-list" id="step-${step.id}-user_id" name="sections[${section.id}][steps][${step.id}][user_id]" required>
+                                                                                        ${step.user_id ? `<option value="${step.user_id}" selected>${getStepDisplayName(step, 'user') || 'Selected User'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Turnaround Time <span class="text-danger">*</span></label>
+                                                                                    <div class="input-group">
+                                                                                        <span class="input-group-text">Days</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_turn_around_time_day]" placeholder="Enter days" value="${step.maker_turn_around_time_day || ''}">
+                                                                                        <span class="input-group-text">Hours</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_turn_around_time_hour]" placeholder="Enter hours" value="${step.maker_turn_around_time_hour || ''}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <hr class="mt-4 mb-4">
+                                                                                <h5>Maker Escalation</h5>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Escalation User</label>
+                                                                                    <select class="form-select select2" data-whichselect="escalation-maker-list" id="step-${step.id}-maker_escalation_user_id" name="sections[${section.id}][steps][${step.id}][maker_escalation_user_id]">
+                                                                                        ${step.maker_escalation_user_id ? `<option value="${step.maker_escalation_user_id}" selected>${getStepDisplayName(step, 'makerEscalationUser') || 'Selected User'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Escalation After</label>
+                                                                                    <div class="input-group">
+                                                                                        <span class="input-group-text">Days</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_escalation_after_day]" placeholder="Enter days" value="${step.maker_escalation_after_day || ''}">
+                                                                                        <span class="input-group-text">Hours</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][maker_escalation_after_hour]" placeholder="Enter hours" value="${step.maker_escalation_after_hour || ''}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-6 mt-2">
+                                                                                    <label class="form-label fw-semibold">Email Notification Template</label>
+                                                                                    <select class="form-select select2" data-whichselect="maker-email-list" id="step-${step.id}-maker_escalation_email_notification" name="sections[${section.id}][steps][${step.id}][maker_escalation_email_notification]" required>
+                                                                                        ${step.maker_escalation_email_notification ? `<option value="${step.maker_escalation_email_notification}" selected>${getStepDisplayName(step, 'makerEscalationEmailNotification') || 'Selected Template'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 mt-2">
+                                                                                    <label class="form-label fw-semibold">Push Notification Template</label>
+                                                                                    <select class="form-select select2" data-whichselect="maker-push-list" id="step-${step.id}-maker_escalation_push_notification" name="sections[${section.id}][steps][${step.id}][maker_escalation_push_notification]" required>
+                                                                                        ${step.maker_escalation_push_notification ? `<option value="${step.maker_escalation_push_notification}" selected>${getStepDisplayName(step, 'makerEscalationPushNotification') || 'Selected Template'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="accordion-item">
+                                                                        <h2 class="accordion-header">
+                                                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-checker-${step.id}" aria-expanded="false" aria-controls="collapse-checker-${step.id}">
+                                                                                Checker
+                                                                            </button>
+                                                                        </h2>
+                                                                        <div id="collapse-checker-${step.id}" class="accordion-collapse collapse" data-bs-parent="#accordionExample-${step.id}">
+                                                                            <div class="accordion-body row">
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Checker <span class="text-danger">*</span></label>
+                                                                                    <select class="form-select select2" data-whichselect="checker-list" id="step-${step.id}-checker_id" name="sections[${section.id}][steps][${step.id}][checker_id]" required>
+                                                                                        ${step.checker_id ? `<option value="${step.checker_id}" selected>${getStepDisplayName(step, 'checker') || 'Selected User'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Turnaround Time <span class="text-danger">*</span></label>
+                                                                                    <div class="input-group">
+                                                                                        <span class="input-group-text">Days</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_turn_around_time_day]" placeholder="Enter days" value="${step.checker_turn_around_time_day || ''}">
+                                                                                        <span class="input-group-text">Hours</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_turn_around_time_hour]" placeholder="Enter hours" value="${step.checker_turn_around_time_hour || ''}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <hr class="mt-4 mb-4">
+                                                                                <h5>Checker Escalation</h5>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Escalation User</label>
+                                                                                    <select class="form-select select2" data-whichselect="escalation-checker-list" id="step-${step.id}-checker_escalation_user_id" name="sections[${section.id}][steps][${step.id}][checker_escalation_user_id]">
+                                                                                        ${step.checker_escalation_user_id ? `<option value="${step.checker_escalation_user_id}" selected>${getStepDisplayName(step, 'checkerEscalationUser') || 'Selected User'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <label class="form-label fw-semibold">Escalation After</label>
+                                                                                    <div class="input-group">
+                                                                                        <span class="input-group-text">Days</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_escalation_after_day]" placeholder="Enter days" value="${step.checker_escalation_after_day || ''}">
+                                                                                        <span class="input-group-text">Hours</span>
+                                                                                        <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_escalation_after_hour]" placeholder="Enter hours" value="${step.checker_escalation_after_hour || ''}">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-md-6 mt-2">
+                                                                                    <label class="form-label fw-semibold">Email Notification Template</label>
+                                                                                    <select class="form-select select2" data-whichselect="checker-email-list" id="step-${step.id}-checker_escalation_email_notification" name="sections[${section.id}][steps][${step.id}][checker_escalation_email_notification]" required>
+                                                                                        ${step.checker_escalation_email_notification ? `<option value="${step.checker_escalation_email_notification}" selected>${getStepDisplayName(step, 'checkerEscalationEmailNotification') || 'Selected Template'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div class="col-md-6 mt-2">
+                                                                                    <label class="form-label fw-semibold">Push Notification Template</label>
+                                                                                    <select class="form-select select2" data-whichselect="checker-push-list" id="step-${step.id}-checker_escalation_push_notification" name="sections[${section.id}][steps][${step.id}][checker_escalation_push_notification]" required>
+                                                                                        ${step.checker_escalation_push_notification ? `<option value="${step.checker_escalation_push_notification}" selected>${getStepDisplayName(step, 'checkerEscalationPushNotification') || 'Selected Template'}</option>` : ''}
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-6 mt-2">
-                                                            <label class="form-label fw-semibold">Email Notification Template</label>
-                                                            <select class="form-select select2" data-whichselect="maker-email-list" id="step-${step.id}-maker_escalation_email_notification" name="sections[${section.id}][steps][${step.id}][maker_escalation_email_notification]" required>
-                                                                ${step.maker_escalation_email_notification ? `<option value="${step.maker_escalation_email_notification}" selected>${step.makerEscalationEmailNotification.name || ''} - ${step.makerEscalationEmailNotification.title || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-6 mt-2">
-                                                            <label class="form-label fw-semibold">Push Notification Template</label>
-                                                            <select class="form-select select2" data-whichselect="maker-push-list" id="step-${step.id}-maker_escalation_push_notification" name="sections[${section.id}][steps][${step.id}][maker_escalation_push_notification]" required>
-                                                                ${step.maker_escalation_push_notification ? `<option value="${step.maker_escalation_push_notification}" selected>${step.makerEscalationPushNotification.name || ''} - ${step.makerEscalationPushNotification.title || ''}</option>` : ''}
-                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-checker-${step.id}" aria-expanded="false" aria-controls="collapse-checker-${step.id}">
-                                                        Checker
-                                                    </button>
-                                                </h2>
-                                                <div id="collapse-checker-${step.id}" class="accordion-collapse collapse" data-bs-parent="#accordionExample-${step.id}">
-                                                    <div class="accordion-body row">
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Checker <span class="text-danger">*</span></label>
-                                                            <select class="form-select select2" data-whichselect="checker-list" id="step-${step.id}-checker_id" name="sections[${section.id}][steps][${step.id}][checker_id]" required>
-                                                                ${step.checker_id ? `<option value="${step.checker_id}" selected>${step.checker.employee_id || ''} - ${step.checker.name || ''} ${step.checker.middle_name || ''} ${step.checker.last_name || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Turnaround Time <span class="text-danger">*</span></label>
-                                                            <div class="input-group">
-                                                                <span class="input-group-text">Days</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_turn_around_time_day]" placeholder="Enter days" value="${step.checker_turn_around_time_day || ''}">
-                                                                <span class="input-group-text">Hours</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_turn_around_time_hour]" placeholder="Enter hours" value="${step.checker_turn_around_time_hour || ''}">
-                                                            </div>
-                                                        </div>
-                                                        <hr class="mt-4 mb-4">
-                                                        <h5>Checker Escalation</h5>
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Escalation User</label>
-                                                            <select class="form-select select2" data-whichselect="escalation-checker-list" id="step-${step.id}-checker_escalation_user_id" name="sections[${section.id}][steps][${step.id}][checker_escalation_user_id]">
-                                                                ${step.checker_escalation_user_id ? `<option value="${step.checker_escalation_user_id}" selected>${step.checkerEscalationUser.employee_id || ''} - ${step.checkerEscalationUser.name || ''} ${step.checkerEscalationUser.middle_name || ''} ${step.checkerEscalationUser.last_name || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label class="form-label fw-semibold">Escalation After</label>
-                                                            <div class="input-group">
-                                                                <span class="input-group-text">Days</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_escalation_after_day]" placeholder="Enter days" value="${step.checker_escalation_after_day || ''}">
-                                                                <span class="input-group-text">Hours</span>
-                                                                <input type="number" class="form-control" name="sections[${section.id}][steps][${step.id}][checker_escalation_after_hour]" placeholder="Enter hours" value="${step.checker_escalation_after_hour || ''}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6 mt-2">
-                                                            <label class="form-label fw-semibold">Email Notification Template</label>
-                                                            <select class="form-select select2" data-whichselect="checker-email-list" id="step-${step.id}-checker_escalation_email_notification" name="sections[${section.id}][steps][${step.id}][checker_escalation_email_notification]" required>
-                                                                ${step.checker_escalation_email_notification ? `<option value="${step.checker_escalation_email_notification}" selected>${step.checkerEscalationEmailNotification.name || ''} - ${step.checkerEscalationEmailNotification.title || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-6 mt-2">
-                                                            <label class="form-label fw-semibold">Push Notification Template</label>
-                                                            <select class="form-select select2" data-whichselect="checker-push-list" id="step-${step.id}-checker_escalation_push_notification" name="sections[${section.id}][steps][${step.id}][checker_escalation_push_notification]" required>
-                                                                ${step.checker_escalation_push_notification ? `<option value="${step.checker_escalation_push_notification}" selected>${step.checkerEscalationPushNotification.name || ''} - ${step.checkerEscalationPushNotification.title || ''}</option>` : ''}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
+                                            `).join('');
             }
 
             function renderSectionDetails(section) {
@@ -653,63 +685,63 @@
                 }
 
                 const sectionDetailsHtml = `
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label class="form-label fw-semibold">Section Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="sections[${section.id}][name]" 
-                                       value="${section.name}" placeholder="e.g., Store Setup & Configuration" required>
-                                <div class="form-hint">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Use section-oriented names that clearly indicate the section's purpose
-                                </div>
-                            </div>
+                                                <div class="row g-3">
+                                                    <div class="col-md-12">
+                                                        <label class="form-label fw-semibold">Section Name <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" name="sections[${section.id}][name]" 
+                                                               value="${section.name}" placeholder="e.g., Store Setup & Configuration" required>
+                                                        <div class="form-hint">
+                                                            <i class="bi bi-info-circle me-1"></i>
+                                                            Use section-oriented names that clearly indicate the section's purpose
+                                                        </div>
+                                                    </div>
 
-                            <div class="col-md-12">
-                                <label class="form-label fw-semibold">Section Code <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="sections[${section.id}][code]" 
-                                           value="${section.code}" placeholder="e.g., STORE_SETUP" required>
-                                    <button class="btn btn-outline-secondary" type="button" id="regenerateCode">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
-                                </div>
-                                <div class="form-hint">
-                                    Use uppercase letters and underscores (e.g., STORE_SETUP, INVENTORY_CHECK)
-                                </div>
-                            </div>
+                                                    <div class="col-md-12">
+                                                        <label class="form-label fw-semibold">Section Code <span class="text-danger">*</span></label>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" name="sections[${section.id}][code]" 
+                                                                   value="${section.code}" placeholder="e.g., STORE_SETUP" required>
+                                                            <button class="btn btn-outline-secondary" type="button" id="regenerateCode">
+                                                                <i class="bi bi-arrow-clockwise"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="form-hint">
+                                                            Use uppercase letters and underscores (e.g., STORE_SETUP, INVENTORY_CHECK)
+                                                        </div>
+                                                    </div>
 
-                            <div class="col-md-12">
-                                <label class="form-label fw-semibold">Description</label>
-                                <textarea class="form-control" name="sections[${section.id}][description]" 
-                                          rows="3" placeholder="Describe the activities, objectives, and outcomes for this section..." 
-                                          maxlength="200">${section.description}</textarea>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <div class="form-hint">
-                                        <i class="bi bi-pencil me-1"></i>
-                                        Include key activities and expected outcomes
-                                    </div>
-                                    <div class="character-counter">
-                                        <span id="charCount">${section.description.length}</span>/200 characters
-                                    </div>
-                                </div>
-                            </div>
+                                                    <div class="col-md-12">
+                                                        <label class="form-label fw-semibold">Description</label>
+                                                        <textarea class="form-control" name="sections[${section.id}][description]" 
+                                                                  rows="3" placeholder="Describe the activities, objectives, and outcomes for this section..." 
+                                                                  maxlength="200">${section.description}</textarea>
+                                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                                            <div class="form-hint">
+                                                                <i class="bi bi-pencil me-1"></i>
+                                                                Include key activities and expected outcomes
+                                                            </div>
+                                                            <div class="character-counter">
+                                                                <span id="charCount">${section.description.length}</span>/200 characters
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h6 class="mb-0">Steps In This Section</h6>
-                                    <div>
-                                        <span class="badge bg-secondary me-2">${section.steps.length} steps</span>
-                                        <button type="button" class="btn btn-primary btn-sm" onclick="addStepToSection('${section.id}')">
-                                            <i class="bi bi-plus-circle me-1"></i>Add Step
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="steps-container-${section.id}" class="steps-container">
-                                    ${renderStepsForSection(section)}
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                                                    <div class="col-12">
+                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                            <h6 class="mb-0">Steps In This Section</h6>
+                                                            <div>
+                                                                <span class="badge bg-secondary me-2">${section.steps.length} steps</span>
+                                                                <button type="button" class="btn btn-primary btn-sm" onclick="addStepToSection('${section.id}')">
+                                                                    <i class="bi bi-plus-circle me-1"></i>Add Step
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div id="steps-container-${section.id}" class="steps-container">
+                                                            ${renderStepsForSection(section)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `;
 
                 $('#sectionDetailsContainer').html(sectionDetailsHtml);
 
@@ -784,7 +816,7 @@
 
             function removeStepFromSection(sectionId, stepId) {
                 const section = sections[sectionId];
-                const stepIndex = section.steps.findIndex(step => step.id === stepId);
+                const stepIndex = section.steps.findIndex(step => String(step.id) === String(stepId));
 
                 if (stepIndex > -1) {
                     section.steps.splice(stepIndex, 1);
@@ -840,7 +872,7 @@
                     }
 
                     saveCurrentStepData(sectionId);
-                    
+
                     clearTimeout(window.stepNameDebounce);
                     window.stepNameDebounce = setTimeout(() => refreshAllDependencyDropdowns(), 300);
                 });
@@ -1305,7 +1337,7 @@
                 stepsContainer.find('.step-card').each(function () {
                     const stepCard = $(this);
                     const stepId = stepCard.data('step-id');
-                    const step = section.steps.find(s => s.id === stepId);
+                    const step = section.steps.find(s => String(s.id) === String(stepId));
 
                     if (step) {
                         step.step_name = stepCard.find('input[name*="[step_name]"]').val() || '';
@@ -1397,23 +1429,23 @@
                 sections[newSectionId] = clonedSection;
 
                 const sectionItem = $(`
-                        <div class="section-item" data-section-id="${newSectionId}">
-                            <div class="d-flex align-items-center p-3">
-                                <div class="section-drag-handle me-2">
-                                    <i class="bi bi-grip-vertical"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold section-name">${clonedSection.name}</div>
-                                    <div class="section-code text-muted">${clonedSection.code}</div>
-                                    <div class="text-muted small section-description">${clonedSection.description || 'No description provided'}</div>
-                                    <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="section-steps-count">${clonedSection.steps.length} steps</span>
-                                        <span class="section-number">Section ${sectionNumber}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `);
+                                                <div class="section-item" data-section-id="${newSectionId}">
+                                                    <div class="d-flex align-items-center p-3">
+                                                        <div class="section-drag-handle me-2">
+                                                            <i class="bi bi-grip-vertical"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="fw-semibold section-name">${clonedSection.name}</div>
+                                                            <div class="section-code text-muted">${clonedSection.code}</div>
+                                                            <div class="text-muted small section-description">${clonedSection.description || 'No description provided'}</div>
+                                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                                <span class="section-steps-count">${clonedSection.steps.length} steps</span>
+                                                                <span class="section-number">Section ${sectionNumber}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `);
 
                 $('#sectionsContainer').append(sectionItem);
                 sectionItem.click(function () {
@@ -1447,11 +1479,11 @@
                             currentSectionId = null;
                             $('#cloneSection, #deleteSection').prop('disabled', true);
                             $('#sectionDetailsContainer').html(`
-                                    <div class="text-center py-5">
-                                        <i class="bi bi-list-ol text-muted" style="font-size: 3rem;"></i>
-                                        <p class="text-muted mt-3">Select a section to configure its details</p>
-                                    </div>
-                                `);
+                                                            <div class="text-center py-5">
+                                                                <i class="bi bi-list-ol text-muted" style="font-size: 3rem;"></i>
+                                                                <p class="text-muted mt-3">Select a section to configure its details</p>
+                                                            </div>
+                                                        `);
                         }
 
                         updateSectionNumbers();
