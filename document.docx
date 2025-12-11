@@ -1,0 +1,78 @@
+- Checker add while scheduling checklist
+- Changes statuses and add new status for in verification and verified by checkers
+- On check on redo in task submission list open popup and fill details like reasons & date
+- API for checker to verify task
+- Generate new tasks on check on redo and API for resubmission
+- On checklist scheduling remove time from startdate & enddate except once frequency & add start at and completed by time field for start and due date and change in apis in commands for effect
+
+
+CheckList Schedule Timings
+
+Opening Checklist- Daily once (Between Store open time and operation start time). if store 24 hours open than (Morning 8-10 am)
+
+Closing Checklist- Daily once (Between store close and operation end time) if store 24 hours open than (night 10-12 pm)
+
+Travel Path - Every 4 hour starting from Store open time 
+
+Shift Handover - Daily once (between 4 to 6 pm)
+
+Deep cleaning - Every Monday & Last day of month(full day)
+
+Daily cleaning - Daily once (between Store Open & Close Time)
+
+HTR - Daily once (between Store Open & Close Time)
+ 
+Daily cleaning - Daily once (between Store Open & Close Time)  - 12 Hour Grace Time
+HTR - 12 Hour Grace Time
+Rest - 2 Hour Grace Time
+ 
+Store Opening, Store Closing - 12 Hour Grace Time
+
+Document Changes - 4:30 hours
+-filters in documentation
+-Apis to list document role wise with filters
+-changes in expiry document notification multiple users
+-change label of document module into document type
+-add slug field in document type crud
+-add perpetual option with expiry date in document upload
+-multi role assignment with in document upload
+-import/export functionality with zip file mapping
+
+Store Code	Document Slug	File Name	Location Category	Perpetual	Issue Date	Expiry Date	Remarks	Enable Store	Dom Access	Operation Manager Access	Additional Users	Notification Users	Template	Status
+1443	FSSAI	1443_FSSAI.pdf						Yes/No	Yes/No	Yes/No	TTPL121,TPPL1122			
+1443	FSSAI	1443_NOC.pdf												
+1443	FSSAI	1443_FSSAI.pdf												
+
+ 
+ ===================================================================================================
+
+1.Add version_id to tasks table & table form_versions
+2. in temp cmd file replace code and run command
+3. push code (do not run migration)
+4. test
+5. add migration name in migrations table and add in kernal both command
+6. new command to empty form in tasks
+
+
+
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS `form_versions`;
+CREATE TABLE `form_versions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `checklist_id` bigint(20) unsigned NOT NULL,
+  `added_by` bigint(20) unsigned DEFAULT NULL,
+  `hash` varchar(191) DEFAULT NULL,
+  `form` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`form`)),
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

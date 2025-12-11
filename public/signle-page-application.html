@@ -1,0 +1,1134 @@
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <style>
+        ::-webkit-scrollbar { display: none;}
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .signature-pad { border: 2px dashed #E5E7EB; background: #FAFAFA; cursor: crosshair; }
+        .signature-pad.signed { border-color: #16A34A; background: #F0FDF4; }
+        .question-screen { display: none; }
+        .question-screen.active { display: block; }
+      /* New animation for success tick */
+  .animate-success-tick {
+    animation: bounce 0.6s ease-out;
+  }
+
+  @keyframes bounce {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+    </style>
+    <script>tailwind.config = {
+  "theme": {
+    "extend": {
+      "colors": {
+        "primary": "#065E2E",
+        "action": "#2563EB",
+        "dark-nav": "#3C4D48",
+        "page-bg": "#F8F9FA",
+        "card-bg": "#FFFFFF",
+        "border-color": "#E5E7EB",
+        "danger": "#DC2626",
+        "warning": "#F59E0B",
+        "success": "#16A34A"
+      },
+      "borderRadius": {
+        "lg": "12px",
+        "xl": "16px"
+      },
+      "boxShadow": {
+        "soft": "0 2px 8px 0 rgba(0, 0, 0, 0.06)",
+        "card": "0 4px 12px 0 rgba(0, 0, 0, 0.08)"
+      },
+      "fontFamily": {
+        "sans": [
+          "Inter",
+          "sans-serif"
+        ]
+      }
+    }
+  }
+};</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"><style>
+  .highlighted-section { outline: 2px solid #3F20FB; background-color: rgba(63, 32, 251, 0.1); }
+  .edit-button { position: absolute; z-index: 1000; }
+  ::-webkit-scrollbar { display: none; }
+  html, body { -ms-overflow-style: none; scrollbar-width: none; }
+  </style></head>
+<body class="bg-page-bg">
+
+<div id="mobile-container" class="max-w-sm mx-auto bg-page-bg">
+  <!-- SCREEN: HOME (from page-1, trimmed as requested) -->
+  <div id="screen-home" class="min-h-screen">
+    <!-- Header (Good morning section removed) -->
+
+    <!-- Progress Overview -->
+    <section class="px-4 py-4 bg-card-bg mx-4 mt-4 rounded-xl shadow-card">
+      <div class="flex space-x-6">
+        <div class="flex-1">
+          <div class="text-center">
+            <div class="relative w-20 h-20 mx-auto mb-3">
+              <svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                <path class="text-gray-200" stroke="currentColor" stroke-width="2.5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                <path class="text-primary" stroke="currentColor" stroke-width="2.5" fill="none" stroke-dasharray="67, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-sm font-semibold text-gray-900">67%</span>
+              </div>
+            </div>
+            <h3 class="text-sm font-medium text-gray-900 mb-1">My Progress</h3>
+            <p class="text-xs text-gray-500">12/18 assigned</p>
+          </div>
+        </div>
+        <div class="flex-1">
+          <div class="text-center">
+            <div class="mb-4">
+              <div class="bg-gray-200 rounded-full h-2.5 mb-2">
+                <div class="bg-primary h-2.5 rounded-full transition-all duration-300" style="width: 45%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-500">
+                <span class="font-medium">9/20</span>
+                <span class="font-medium">45%</span>
+              </div>
+            </div>
+            <h3 class="text-sm font-medium text-gray-900 mb-1">Section Progress</h3>
+            <p class="text-xs text-gray-500">Morning Shift</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Stats Section -->
+    <section id="quick-stats" class="px-4 py-4">
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-card-bg p-4 rounded-xl shadow-soft text-center border border-border-color">
+          <div class="text-2xl font-bold text-success mb-1">24</div>
+          <div class="text-xs font-medium text-gray-500">Completed</div>
+        </div>
+        <div class="bg-card-bg p-4 rounded-xl shadow-soft text-center border border-border-color">
+          <div class="text-2xl font-bold text-danger mb-1">3</div>
+          <div class="text-xs font-medium text-gray-500">Overdue</div>
+        </div>
+        <div class="bg-card-bg p-4 rounded-xl shadow-soft text-center border border-border-color">
+          <div class="text-2xl font-bold text-warning mb-1">12</div>
+          <div class="text-xs font-medium text-gray-500">Pending</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <section class="px-4 py-2">
+      <div class="bg-gray-100 p-1 rounded-xl">
+        <div class="flex">
+          <button id="tab-today" class="flex-1 py-3 px-4 bg-card-bg text-primary text-sm font-medium rounded-lg shadow-soft">Today</button>
+          <button id="tab-overdue" class="flex-1 py-3 px-4 text-gray-500 text-sm font-medium hover:text-gray-700 transition-colors">Overdue</button>
+          <button id="tab-all" class="flex-1 py-3 px-4 text-gray-500 text-sm font-medium hover:text-gray-700 transition-colors">All</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tasks List (keep Morning Operations only) -->
+    <section class="px-4 py-4 space-y-4">
+      <div class="bg-card-bg rounded-xl shadow-card overflow-hidden border border-border-color">
+        <div class="px-4 py-4 bg-gray-50/70 border-b border-border-color">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold text-gray-900">Legal</h3>
+            <div class="flex items-center space-x-2">
+              <div class="bg-gray-200 rounded-full h-2 w-12">
+                <div class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 80%"></div>
+              </div>
+              <span class="text-xs font-medium text-gray-600">4/5</span>
+            </div>
+          </div>
+        </div>
+        <div id="mo-task-list" class="divide-y divide-border-color">
+          <button id="link-opening-checklist" data-status="today" class="w-full text-left p-4 hover:bg-gray-50">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-sm font-medium text-gray-900">Rent Agreement</h4>
+              <div class="bg-action/10 px-3 py-1 rounded-lg">
+                <span class="text-xs font-medium text-action">Assigned to me: 4/9</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="bg-gray-200 rounded-full h-1.5 flex-1">
+                <div class="bg-action h-1.5 rounded-full transition-all duration-300" style="width: 44%"></div>
+              </div>
+              <span class="text-xs font-medium text-gray-500">Due: 9:00 AM</span>
+            </div>
+          </button>
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-sm font-medium text-gray-900">Food Licence</h4>
+              <div class="bg-success/10 px-3 py-1 rounded-lg">
+                <span class="text-xs font-medium text-success">Complete</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="bg-gray-200 rounded-full h-1.5 flex-1">
+                <div class="bg-success h-1.5 rounded-full transition-all duration-300" style="width: 100%"></div>
+              </div>
+              <span class="text-xs font-medium text-gray-500">Completed: 8:15 AM</span>
+            </div>
+          </div>
+
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-sm font-medium text-gray-900">Fire Noc Declaration</h4>
+              <div class="bg-danger/10 px-3 py-1 rounded-lg">
+                <span class="text-xs font-medium text-danger">Overdue</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="bg-gray-200 rounded-full h-1.5 flex-1">
+                <div class="bg-danger h-1.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+              </div>
+              <span class="text-xs font-medium text-gray-500">Due: 8:30 AM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Activity Section -->
+    <section id="recent-activity" class="px-4 py-4">
+      <div class="bg-card-bg rounded-xl shadow-card p-4 border border-border-color">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">Recent Activity</h3>
+        <div class="space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-success/10 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-check text-success text-sm"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">Completed Food Licence</p>
+              <p class="text-xs text-gray-500 mt-1">8:15 AM</p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-action/10 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-play text-action text-sm"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">Started Opening Checklist</p>
+              <p class="text-xs text-gray-500 mt-1">7:45 AM</p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-clock text-primary text-sm"></i>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">Clocked in</p>
+              <p class="text-xs text-gray-500 mt-1">7:30 AM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance Metrics Section -->
+    <section id="performance-metrics" class="px-4 py-4">
+      <div class="bg-card-bg rounded-xl shadow-card p-4 border border-border-color">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">This Week's Performance</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="text-center p-3 bg-gray-50 rounded-xl">
+            <div class="text-2xl font-bold text-success mb-1">94%</div>
+            <div class="text-xs font-medium text-gray-500 mb-1">Completion Rate</div>
+            <div class="text-xs text-success font-medium">↑ 3% from last week</div>
+          </div>
+
+          <div class="text-center p-3 bg-gray-50 rounded-xl">
+            <div class="text-2xl font-bold text-primary mb-1">4.8</div>
+            <div class="text-xs font-medium text-gray-500 mb-1">Avg Rating</div>
+            <div class="text-xs text-success font-medium">↑ 0.2 from last week</div>
+          </div>
+
+          <div class="text-center p-3 bg-gray-50 rounded-xl">
+            <div class="text-2xl font-bold text-action mb-1">127</div>
+            <div class="text-xs font-medium text-gray-500 mb-1">Tasks Completed</div>
+            <div class="text-xs text-success font-medium">↑ 12 from last week</div>
+          </div>
+
+          <div class="text-center p-3 bg-gray-50 rounded-xl">
+            <div class="text-2xl font-bold text-warning mb-1">2.3h</div>
+            <div class="text-xs font-medium text-gray-500 mb-1">Avg Time/Task</div>
+            <div class="text-xs text-success font-medium">↓ 0.5h from last week</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Sections removed per request: Customer Service, Team Status, Announcements, Maintenance, Quick Actions, Floating Button -->
+
+  </div>
+
+  <!-- SCREEN: CHECKLIST OVERVIEW (from page-2) -->
+  <div id="screen-overview" class="min-h-screen hidden">
+    <header class="bg-card-bg px-4 py-4 shadow-soft">
+      <div class="flex items-center space-x-3">
+        <button data-back="home" class="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        <div class="flex-1">
+          <div class="flex items-center text-sm text-gray-500 mb-1">
+            <span>Legal</span>
+            <i class="fa-solid fa-chevron-right mx-2 text-xs"></i>
+            <span>Rent Agreement</span>
+          </div>
+          <h1 class="text-lg font-semibold text-gray-900">Checklist Details</h1>
+        </div>
+      </div>
+    </header>
+    <section class="px-4 py-4">
+      <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color">
+        <div class="text-center mb-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">Rent Agreement</h2>
+          <div class="flex items-center justify-center space-x-4 mb-4">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-clock text-gray-500 text-sm"></i>
+              <span class="text-sm text-gray-600">ETA ~15 min</span>
+            </div>
+            <div class="w-px h-4 bg-gray-300"></div>
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-list-check text-gray-500 text-sm"></i>
+              <span class="text-sm text-gray-600">3 Questions</span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-gray-700">Progress</span>
+              <span id="overview-progress-text" class="text-sm text-gray-500">0/3</span>
+            </div>
+            <div class="bg-gray-200 rounded-full h-3">
+              <div id="overview-progress-bar" class="bg-primary h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+          <button id="start-checklist" class="w-full bg-primary text-white py-4 px-6 rounded-xl font-semibold text-base hover:bg-primary/90 transition-colors min-h-[44px] shadow-soft">
+            <i class="fa-solid fa-play mr-2"></i>Start Checklist
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Questions Preview -->
+    <section id="questions-preview" class="px-4 py-4">
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Questions in this checklist:</h3>
+        <p class="text-sm text-gray-600">Preview of what you'll be asked to complete</p>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Question 1 -->
+        <div class="bg-card-bg rounded-xl shadow-soft p-4 border border-border-color">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-semibold text-gray-600">1</span>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-base font-medium text-gray-900 mb-2">Check Sales Deed</h4>
+              <div class="flex items-center space-x-4 text-sm text-gray-500">
+                <div class="flex items-center space-x-1">
+                  <i class="fa-solid fa-camera text-xs"></i>
+                  <span>Photos allowed</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <i class="fa-solid fa-clock text-xs"></i>
+                  <span>~5 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex-shrink-0"></div>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="bg-card-bg rounded-xl shadow-soft p-4 border border-border-color">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-semibold text-gray-600">2</span>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-base font-medium text-gray-900 mb-2">Check Allotment Letter</h4>
+              <div class="flex items-center space-x-4 text-sm text-gray-500">
+                <div class="flex items-center space-x-1">
+                  <i class="fa-solid fa-camera text-xs"></i>
+                  <span>Photos allowed</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <i class="fa-solid fa-clock text-xs"></i>
+                  <span>~5 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex-shrink-0"></div>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="bg-card-bg rounded-xl shadow-soft p-4 border border-border-color">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-semibold text-gray-600">3</span>
+            </div>
+            <div class="flex-1">
+              <h4 class="text-base font-medium text-gray-900 mb-2">Check Possession Letter</h4>
+              <div class="flex items-center space-x-4 text-sm text-gray-500">
+                <div class="flex items-center space-x-1">
+                  <i class="fa-solid fa-camera text-xs"></i>
+                  <span>Photos allowed</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <i class="fa-solid fa-clock text-xs"></i>
+                  <span>~5 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex-shrink-0"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-4 py-4 mb-20">
+      <div class="bg-action/5 rounded-xl p-4 border border-action/20">
+        <div class="flex items-start space-x-3">
+          <i class="fa-solid fa-info-circle text-action mt-1"></i>
+          <div>
+            <h4 class="text-sm font-semibold text-action mb-2">Before you start:</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• Ensure you have good lighting for photos</li>
+              <li>• Maximum 5 photos per question</li>
+              <li>• You can save progress and continue later</li>
+              <li>• Questions have individual timers for guidance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SCREEN: QUESTIONS (from page-3) -->
+  <div id="screen-questions" class="min-h-screen hidden">
+    <!-- Question Template Instances -->
+    <div id="q1" class="question-screen active">
+      <header class="bg-card-bg px-4 py-4 shadow-soft relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button data-back="overview" class="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+              <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-900">Question 1 of 3</h1>
+          </div>
+          <div class="w-16 h-16 rounded-full bg-success flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+            <span id="timer-q1">05:00</span>
+          </div>
+        </div>
+      </header>
+      <div class="px-4 py-4 pb-32">
+        <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Check Sales Deed</h2>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">Select Answer</label>
+            <div class="flex bg-gray-100 rounded-xl p-1">
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="1" data-value="pass">Pass</button>
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="1" data-value="fail">Fail</button>
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="1" data-value="na">N.A</button>
+            </div>
+          </div>
+          <div id="fail-warning-1" class="mb-4 p-3 bg-warning/10 border border-warning/20 rounded-lg hidden">
+            <p class="text-sm text-warning font-medium">Add remark and proof if possible.</p>
+          </div>
+          <div id="na-reason-1" class="mb-4 hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Reason for N.A</label>
+            <textarea id="na-text-1" class="w-full p-3 border border-border-color rounded-lg resize-none h-20 text-sm" placeholder="Please specify reason..."></textarea>
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Remarks (Optional)</label>
+            <textarea id="remarks-1" class="w-full p-3 border border-border-color rounded-lg resize-none h-24 text-sm" placeholder="Add any additional notes..."></textarea>
+          </div>
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-sm font-medium text-gray-700">Add Photos</label>
+              <span class="text-sm text-gray-500" id="photo-counter-1">0/5</span>
+            </div>
+            <div class="flex space-x-3 mb-4">
+              <input id="camera-input-1" type="file" accept="image/*" capture="environment" class="hidden">
+              <input id="gallery-input-1" type="file" accept="image/*" multiple class="hidden">
+              <button data-camera="1" class="flex-1 flex items-center justify-center py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors min-h-[44px]"><i class="fa-solid fa-camera mr-2"></i>Camera</button>
+              <button data-gallery="1" class="flex-1 flex items-center justify-center py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors min-h-[44px]"><i class="fa-solid fa-image mr-2"></i>Gallery</button>
+            </div>
+            <div id="photo-grid-1" class="grid grid-cols-3 gap-3 hidden"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fixed bottom-0 left-0 right-0 bg-card-bg border-t border-border-color px-4 py-4 shadow-lg">
+        <div class="max-w-sm mx-auto">
+          <div class="flex space-x-3">
+            <button data-next="1" class="flex-1 py-3 px-4 bg-gray-300 text-gray-500 rounded-xl font-medium min-h-[44px] cursor-not-allowed" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="q2" class="question-screen">
+      <header class="bg-card-bg px-4 py-4 shadow-soft relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button data-back="overview" class="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+              <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-900">Question 2 of 3</h1>
+          </div>
+          <div class="w-16 h-16 rounded-full bg-success flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+            <span id="timer-q2">05:00</span>
+          </div>
+        </div>
+      </header>
+      <div class="px-4 py-4 pb-32">
+        <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Check Allotment Letter</h2>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">Select Answer</label>
+            <div class="flex bg-gray-100 rounded-xl p-1">
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="2" data-value="pass">Pass</button>
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="2" data-value="fail">Fail</button>
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="2" data-value="na">N.A</button>
+            </div>
+          </div>
+          <div id="fail-warning-2" class="mb-4 p-3 bg-warning/10 border border-warning/20 rounded-lg hidden">
+            <p class="text-sm text-warning font-medium">Add remark and proof if possible.</p>
+          </div>
+          <div id="na-reason-2" class="mb-4 hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Reason for N.A</label>
+            <textarea id="na-text-2" class="w-full p-3 border border-border-color rounded-lg resize-none h-20 text-sm" placeholder="Please specify reason..."></textarea>
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Remarks (Optional)</label>
+            <textarea id="remarks-2" class="w-full p-3 border border-border-color rounded-lg resize-none h-24 text-sm" placeholder="Add any additional notes..."></textarea>
+          </div>
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-sm font-medium text-gray-700">Add Photos</label>
+              <span class="text-sm text-gray-500" id="photo-counter-2">0/5</span>
+            </div>
+            <div class="flex space-x-3 mb-4">
+              <input id="camera-input-2" type="file" accept="image/*" capture="environment" class="hidden">
+              <input id="gallery-input-2" type="file" accept="image/*" multiple class="hidden">
+              <button data-camera="2" class="flex-1 flex items-center justify-center py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors min-h-[44px]"><i class="fa-solid fa-camera mr-2"></i>Camera</button>
+              <button data-gallery="2" class="flex-1 flex items-center justify-center py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors min-h-[44px]"><i class="fa-solid fa-image mr-2"></i>Gallery</button>
+            </div>
+            <div id="photo-grid-2" class="grid grid-cols-3 gap-3 hidden"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fixed bottom-0 left-0 right-0 bg-card-bg border-t border-border-color px-4 py-4 shadow-lg">
+        <div class="max-w-sm mx-auto">
+          <div class="flex space-x-3">
+            <button data-next="2" class="flex-1 py-3 px-4 bg-gray-300 text-gray-500 rounded-xl font-medium min-h-[44px] cursor-not-allowed" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="q3" class="question-screen">
+      <header class="bg-card-bg px-4 py-4 shadow-soft relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button data-back="overview" class="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+              <i class="fa-solid fa-chevron-left text-lg"></i>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-900">Question 3 of 3</h1>
+          </div>
+          <div class="w-16 h-16 rounded-full bg-success flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+            <span id="timer-q3">05:00</span>
+          </div>
+        </div>
+      </header>
+      <div class="px-4 py-4 pb-32">
+        <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Check Possession Letter</h2>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">Select Answer</label>
+            <div class="flex bg-gray-100 rounded-xl p-1">
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="3" data-value="pass">Pass</button>
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="3" data-value="fail">Fail</button>
+              <button class="answer-btn flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-colors min-h-[44px]" data-q="3" data-value="na">N.A</button>
+            </div>
+          </div>
+          <div id="fail-warning-3" class="mb-4 p-3 bg-warning/10 border border-warning/20 rounded-lg hidden">
+            <p class="text-sm text-warning font-medium">Add remark and proof if possible.</p>
+          </div>
+          <div id="na-reason-3" class="mb-4 hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Reason for N.A</label>
+            <textarea id="na-text-3" class="w-full p-3 border border-border-color rounded-lg resize-none h-20 text-sm" placeholder="Please specify reason..."></textarea>
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Remarks (Optional)</label>
+            <textarea id="remarks-3" class="w-full p-3 border border-border-color rounded-lg resize-none h-24 text-sm" placeholder="Add any additional notes..."></textarea>
+          </div>
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-sm font-medium text-gray-700">Add Photos</label>
+              <span class="text-sm text-gray-500" id="photo-counter-3">0/5</span>
+            </div>
+            <div class="flex space-x-3 mb-4">
+              <input id="camera-input-3" type="file" accept="image/*" capture="camera" class="hidden">
+              <input id="gallery-input-3" type="file" accept="image/*" multiple class="hidden">
+              <button data-camera="3" class="flex-1 flex items-center justify-center py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors min-h-[44px]"><i class="fa-solid fa-camera mr-2"></i>Camera</button>
+              <button data-gallery="3" class="flex-1 flex items-center justify-center py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary transition-colors min-h-[44px]"><i class="fa-solid fa-image mr-2"></i>Gallery</button>
+            </div>
+            <div id="photo-grid-3" class="grid grid-cols-3 gap-3 hidden"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fixed bottom-0 left-0 right-0 bg-card-bg border-t border-border-color px-4 py-4 shadow-lg">
+        <div class="max-w-sm mx-auto">
+          <div class="flex space-x-3">
+            <button data-next="3" class="flex-1 py-3 px-4 bg-gray-300 text-gray-500 rounded-xl font-medium min-h-[44px] cursor-not-allowed" disabled>Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: REVIEW & SUBMIT (from page-4) -->
+  <div id="screen-review" class="min-h-screen hidden">
+    <header class="bg-card-bg px-4 py-4 shadow-soft sticky top-0 z-10">
+      <div class="flex items-center space-x-3">
+        <button data-back="questions" class="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        <h1 class="text-lg font-semibold text-gray-900">Review &amp; Submit</h1>
+      </div>
+    </header>
+    <div class="px-4 py-4 pb-32">
+      <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color mb-4">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Checklist Summary</h2>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="text-center p-4 bg-success/10 rounded-lg border border-success/20">
+            <div id="summary-answered" class="text-2xl font-bold text-success">0/3</div>
+            <div class="text-sm text-gray-600">Questions Answered</div>
+          </div>
+          <div class="text-center p-4 bg-action/10 rounded-lg border border-action/20">
+            <div id="summary-photos" class="text-2xl font-bold text-action">0/15</div>
+            <div class="text-sm text-gray-600">Photos Added</div>
+          </div>
+        </div>
+        <div id="issues-list" class="space-y-3 hidden">
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Items Requiring Attention</h3>
+        </div>
+      </div>
+      <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color mb-4">
+        <label class="flex items-start space-x-3 cursor-pointer min-h-[44px]">
+          <input type="checkbox" id="confirm-checkbox" class="mt-1 w-5 h-5 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary/50">
+          <span class="text-sm text-gray-700 leading-relaxed">I confirm that the information provided is accurate and complete to the best of my knowledge.</span>
+        </label>
+      </div>
+      <div class="bg-card-bg rounded-xl shadow-card p-6 border border-border-color mb-4">
+        <h3 class="text-sm font-medium text-gray-700 mb-3">Digital Signature</h3>
+        <div class="signature-pad w-full h-32 rounded-lg mb-3 flex items-center justify-center" id="signature-pad">
+          <canvas id="signature-canvas" class="w-full h-32"></canvas>
+        </div>
+        <div class="flex justify-between items-center">
+          <button id="clear-signature" class="text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 min-h-[44px] px-3" disabled><i class="fa-solid fa-trash mr-1"></i>Clear</button>
+          <div id="signature-status" class="text-sm text-gray-500">Not signed</div>
+        </div>
+      </div>
+      <div class="text-center mb-6">
+        <button id="edit-answers" class="text-action font-medium text-sm hover:underline min-h-[44px] px-4"><i class="fa-solid fa-edit mr-2"></i>Edit Answers</button>
+      </div>
+    </div>
+    <div class="fixed bottom-0 left-0 right-0 bg-card-bg border-t border-border-color px-4 py-4 shadow-lg">
+      <div class="max-w-sm mx-auto">
+        <button id="submit-btn" class="w-full py-3 px-4 bg-gray-300 text-gray-500 rounded-xl font-medium min-h-[44px] cursor-not-allowed transition-all" disabled><i class="fa-solid fa-paper-plane mr-2"></i>Submit Checklist</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: READ-ONLY CHECKLIST VIEW -->
+  <div id="screen-readonly" class="min-h-screen hidden">
+    <header class="bg-card-bg px-4 py-4 shadow-soft sticky top-0 z-10">
+      <div class="flex items-center space-x-3">
+        <button data-back="review" class="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        <h1 class="text-lg font-semibold text-gray-900">Checklist (Read-only)</h1>
+      </div>
+    </header>
+    <div class="px-4 py-4 pb-24 space-y-4">
+      <div id="ro-q1" class="bg-card-bg rounded-xl shadow-card p-4 border border-border-color">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-base font-semibold text-gray-900">1. Check Sales Deed</h3>
+          <span id="ro-ans-1" class="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-600">—</span>
+        </div>
+        <div id="ro-photos-1" class="grid grid-cols-3 gap-2"></div>
+      </div>
+      <div id="ro-q2" class="bg-card-bg rounded-xl shadow-card p-4 border border-border-color">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-base font-semibold text-gray-900">2. Check Allotment Letter</h3>
+          <span id="ro-ans-2" class="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-600">—</span>
+        </div>
+        <div id="ro-photos-2" class="grid grid-cols-3 gap-2"></div>
+      </div>
+      <div id="ro-q3" class="bg-card-bg rounded-xl shadow-card p-4 border border-border-color">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-base font-semibold text-gray-900">3. Check Possession Letter</h3>
+          <span id="ro-ans-3" class="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-600">—</span>
+        </div>
+        <div id="ro-photos-3" class="grid grid-cols-3 gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: SUCCESS (from page-5) -->
+  <div id="screen-success" class="min-h-screen hidden">
+    <div class="h-16"></div>
+    <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <div class="mb-8">
+        <div class="w-24 h-24 bg-success rounded-full flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-check text-4xl text-white animate-success-tick"></i>
+        </div>
+      </div>
+      <div class="mb-12">
+        <h1 class="text-2xl font-bold text-gray-900 mb-3">Submitted Successfully</h1>
+        <div class="flex items-center justify-center text-gray-600 text-sm">
+          <span>Legal</span>
+          <i class="fa-solid fa-chevron-right mx-2 text-xs"></i>
+          <span>Rent Agreement</span>
+          <span class="mx-2">—</span>
+          <span class="font-medium">3 items recorded</span>
+        </div>
+      </div>
+      <div class="w-full space-y-3 max-w-xs">
+        <button data-nav="home" class="w-full py-3 px-4 bg-primary text-white rounded-xl font-medium min-h-[44px] hover:bg-primary/90 transition-colors shadow-soft"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Section</button>
+        <button id="view-checklist" class="w-full py-3 px-4 bg-transparent text-gray-600 border border-border-color rounded-xl font-medium min-h-[44px] hover:bg-gray-50 transition-colors"><i class="fa-solid fa-eye mr-2"></i>View Checklist</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// SPA State
+const state = {
+  currentScreen: 'home',
+  answers: {1: null, 2: null, 3: null},
+  remarks: {1: '', 2: '', 3: ''},
+  naReasons: {1: '', 2: '', 3: ''},
+  photos: {1: [], 2: [], 3: []},
+  timers: {1: 300, 2: 300, 3: 300},
+  intervals: {1: null, 2: null, 3: null}
+};
+
+function showScreen(id) {
+  document.querySelectorAll('#mobile-container > div[id^=screen-]').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById('screen-' + id);
+  if (el) el.classList.remove('hidden');
+  state.currentScreen = id;
+
+  // Reset success tick animation
+  if (id === 'success') {
+    const tick = document.querySelector('.animate-success-tick');
+    if (tick) {
+      tick.classList.remove('animate-success-tick');
+      void tick.offsetWidth; // Trigger reflow
+      tick.classList.add('animate-success-tick');
+    }
+  }
+}
+
+function showQuestion(idx) {
+  document.querySelectorAll('#screen-questions .question-screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('q' + idx);
+  if (el) el.classList.add('active');
+}
+
+// Navigation wiring
+document.addEventListener('click', (e) => {
+  const nav = e.target.closest('[data-nav]');
+  const back = e.target.closest('[data-back]');
+  const cameraBtn = e.target.closest('[data-camera]');
+  const galleryBtn = e.target.closest('[data-gallery]');
+  const nextBtn = e.target.closest('[data-next]');
+
+  if (nav) {
+    const target = nav.getAttribute('data-nav');
+    if (target === 'tasks') { showScreen('overview'); return; }
+    showScreen(target);
+  }
+
+  if (back) {
+    const target = back.getAttribute('data-back');
+    if (target === 'questions') { showScreen('questions'); showQuestion(1); return; }
+    showScreen(target);
+  }
+
+  if (cameraBtn) {
+    const q = cameraBtn.getAttribute('data-camera');
+    document.getElementById('camera-input-' + q).click();
+  }
+
+  if (galleryBtn) {
+    const q = galleryBtn.getAttribute('data-gallery');
+    document.getElementById('gallery-input-' + q).click();
+  }
+
+  if (nextBtn) {
+    const q = parseInt(nextBtn.getAttribute('data-next'));
+    if (q < 3) {
+      showQuestion(q + 1);
+      startTimer(q + 1);
+    } else {
+      updateReviewSummary();
+      showScreen('review');
+    }
+  }
+});
+
+// Opening Checklist link -> Overview
+document.getElementById('link-opening-checklist').addEventListener('click', () => {
+  showScreen('overview');
+});
+
+// Start checklist -> Questions Q1
+document.getElementById('start-checklist').addEventListener('click', () => {
+  showScreen('questions');
+  showQuestion(1);
+  startTimer(1);
+});
+
+// Answer buttons
+document.querySelectorAll('.answer-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const q = parseInt(btn.getAttribute('data-q'));
+    const value = btn.getAttribute('data-value');
+
+    document.querySelectorAll('#q' + q + ' .answer-btn').forEach(b => {
+      b.classList.remove('bg-primary','text-white');
+      b.classList.add('text-gray-600');
+    });
+    btn.classList.add('bg-primary','text-white');
+    btn.classList.remove('text-gray-600');
+
+    state.answers[q] = value;
+    document.getElementById('fail-warning-' + q).classList.toggle('hidden', value !== 'fail');
+    document.getElementById('na-reason-' + q).classList.toggle('hidden', value !== 'na');
+
+    const next = document.querySelector('#q' + q + ' [data-next]');
+    next.disabled = false;
+    next.classList.remove('bg-gray-300','text-gray-500','cursor-not-allowed');
+    next.classList.add('bg-primary','text-white');
+
+    updateOverviewProgress();
+  });
+});
+
+// Remarks & NA reasons capture
+;[1,2,3].forEach(q => {
+  const r = document.getElementById('remarks-' + q);
+  const n = document.getElementById('na-text-' + q);
+  if (r) r.addEventListener('input', e => state.remarks[q] = e.target.value);
+  if (n) n.addEventListener('input', e => state.naReasons[q] = e.target.value);
+});
+
+// Photo inputs handling
+function handleFiles(q, files) {
+  console.log(`Handling files for question ${q}:`, files); // Debug
+  const max = 5;
+  const arr = Array.from(files).slice(0, Math.max(0, max - state.photos[q].length));
+  console.log(`Selected ${arr.length} files for question ${q}`); // Debug
+  arr.forEach((file, index) => {
+    console.log(`Processing file ${index + 1}:`, file.name, file.type); // Debug
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      console.log(`FileReader result for question ${q}:`, ev.target.result.substring(0, 50)); // Debug
+      state.photos[q].push(ev.target.result);
+      renderPhotos(q);
+      updateReviewSummary();
+      // Send photo data to Flutter
+      if (window.flutter_inappwebview) {
+        window.flutter_inappwebview.callHandler('onPhotoAdded', q, ev.target.result);
+      }
+    };
+    reader.onerror = (err) => console.error(`FileReader error for question ${q}:`, err); // Debug
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderPhotos(q) {
+  const grid = document.getElementById('photo-grid-' + q);
+  const counter = document.getElementById('photo-counter-' + q);
+  const photos = state.photos[q];
+  console.log(`Rendering ${photos.length} photos for question ${q}`); // Debug
+  counter.textContent = `${photos.length}/5`;
+  grid.innerHTML = photos.map((src, idx) => `
+    <div class="relative">
+      <img src="${src}" class="w-full h-20 object-cover rounded-lg">
+      <button data-remove-photo="${q}-${idx}" class="absolute top-1 right-1 bg-danger/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  `).join('');
+  grid.classList.toggle('hidden', photos.length === 0);
+}
+
+// Remove photo
+document.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('[data-remove-photo]');
+  if (removeBtn) {
+    const [q, idx] = removeBtn.getAttribute('data-remove-photo').split('-').map(Number);
+    state.photos[q].splice(idx, 1);
+    renderPhotos(q);
+    updateReviewSummary();
+    // Notify Flutter
+    if (window.flutter_inappwebview) {
+      window.flutter_inappwebview.callHandler('onPhotoRemoved', q, idx);
+    }
+  }
+});
+
+[1, 2, 3].forEach(q => {
+  const cam = document.getElementById('camera-input-' + q);
+  const gal = document.getElementById('gallery-input-' + q);
+  if (cam) {
+    cam.addEventListener('change', (e) => {
+      console.log(`Camera input change for q${q}:`, e.target.files); // Debug
+      handleFiles(q, e.target.files);
+      // Prevent input reset (iOS quirk)
+      e.target.value = ''; // Clear input to allow re-capture
+    });
+  }
+  if (gal) {
+    gal.addEventListener('change', (e) => {
+      console.log(`Gallery input change for q${q}:`, e.target.files); // Debug
+      handleFiles(q, e.target.files);
+    });
+  }
+});
+
+// Timers per question (5 minutes each)
+function startTimer(q) {
+  if (state.intervals[q]) return; // already running
+  state.intervals[q] = setInterval(() => {
+    state.timers[q] = Math.max(0, state.timers[q] - 1);
+    const m = String(Math.floor(state.timers[q] / 60)).padStart(2,'0');
+    const s = String(state.timers[q] % 60).padStart(2,'0');
+    const el = document.getElementById('timer-q' + q);
+    if (el) el.textContent = m + ':' + s;
+    if (state.timers[q] === 0) {
+      clearInterval(state.intervals[q]);
+      state.intervals[q] = null;
+    }
+  }, 1000);
+}
+
+// Overview progress
+function updateOverviewProgress() {
+  const answered = Object.values(state.answers).filter(Boolean).length;
+  const percent = Math.round((answered/3)*100);
+  document.getElementById('overview-progress-text').textContent = answered + '/3';
+  document.getElementById('overview-progress-bar').style.width = percent + '%';
+}
+
+// Review summary
+function updateReviewSummary() {
+  const answered = Object.values(state.answers).filter(Boolean).length;
+  const photos = state.photos[1].length + state.photos[2].length + state.photos[3].length;
+  document.getElementById('summary-answered').textContent = answered + '/3';
+  document.getElementById('summary-photos').textContent = photos + '/15';
+
+  const issues = [];
+  ;[1,2,3].forEach(q => {
+    if (state.answers[q] === 'fail') issues.push({q, type:'fail'});
+    if (state.answers[q] === 'na') issues.push({q, type:'na'});
+  });
+  const list = document.getElementById('issues-list');
+  list.innerHTML = '<h3 class="text-sm font-medium text-gray-700 mb-2">Items Requiring Attention</h3>' + issues.map(it => {
+    const titles = {1:'Check Sales Deed',2:'Check Allotment Letter',3:'Check Possession Letter'};
+    if (it.type === 'fail') return '<div class="p-3 bg-danger/10 border border-danger/20 rounded-lg"><div class="flex items-start space-x-2"><i class="fa-solid fa-exclamation-triangle text-danger text-sm mt-0.5"></i><div class="flex-1"><div class="font-medium text-danger text-sm">' + titles[it.q] + ' - Failed</div><p class="text-xs text-gray-600 mt-1">Please review remarks and attached photos.</p></div></div></div>';
+    return '<div class="p-3 bg-warning/10 border border-warning/20 rounded-lg"><div class="flex items-start space-x-2"><i class="fa-solid fa-info-circle text-warning text-sm mt-0.5"></i><div class="flex-1"><div class="font-medium text-warning text-sm">' + titles[it.q] + ' - N.A</div><p class="text-xs text-gray-600 mt-1">Reason: ' + (state.naReasons[it.q]||'Not provided') + '</p></div></div></div>';
+  }).join('');
+  list.classList.toggle('hidden', issues.length === 0);
+
+  updateSubmitButton();
+}
+
+// Signature & submit
+let isSigned = false; let isConfirmed = false;
+const signaturePad = document.getElementById('signature-pad');
+const clearSignature = document.getElementById('clear-signature');
+const signatureStatus = document.getElementById('signature-status');
+const confirmCheckbox = document.getElementById('confirm-checkbox');
+const submitBtn = document.getElementById('submit-btn');
+
+function updateSubmitButton() {
+  const canSubmit = isSigned && isConfirmed && Object.values(state.answers).filter(Boolean).length === 3;
+  submitBtn.disabled = !canSubmit;
+  submitBtn.classList.toggle('bg-gray-300', !canSubmit);
+  submitBtn.classList.toggle('text-gray-500', !canSubmit);
+  submitBtn.classList.toggle('cursor-not-allowed', !canSubmit);
+  submitBtn.classList.toggle('bg-primary', canSubmit);
+  submitBtn.classList.toggle('text-white', canSubmit);
+}
+
+signaturePad.addEventListener('click', () => {
+  if (!isSigned) {
+    signaturePad.innerHTML = '<div class="text-center text-success"><i class="fa-solid fa-check-circle text-2xl mb-2"></i><p class="text-sm font-medium">Signed</p></div>';
+    signaturePad.classList.add('signed');
+    clearSignature.disabled = false;
+    signatureStatus.textContent = 'Signed successfully';
+    signatureStatus.classList.add('text-success');
+    isSigned = true; updateSubmitButton();
+  }
+});
+
+clearSignature.addEventListener('click', () => {
+  signaturePad.innerHTML = '<div class="text-center text-gray-500"><i class="fa-solid fa-signature text-2xl mb-2"></i><p class="text-sm">Tap here to sign</p></div>';
+  signaturePad.classList.remove('signed');
+  clearSignature.disabled = true;
+  signatureStatus.textContent = 'Not signed';
+  signatureStatus.classList.remove('text-success');
+  isSigned = false; updateSubmitButton();
+});
+
+confirmCheckbox.addEventListener('change', (e) => { isConfirmed = e.target.checked; updateSubmitButton(); });
+
+document.getElementById('edit-answers').addEventListener('click', () => { showScreen('questions'); showQuestion(1); });
+
+submitBtn.addEventListener('click', () => {
+  if (submitBtn.disabled) return;
+  showScreen('success');
+});
+
+// Init
+showScreen('home');
+
+// Morning Operations tabs filtering
+const tabs = { today: document.getElementById('tab-today'), overdue: document.getElementById('tab-overdue'), all: document.getElementById('tab-all') };
+const moList = document.getElementById('mo-task-list');
+function setActiveTab(active) {
+  Object.entries(tabs).forEach(([key, btn]) => {
+    if (!btn) return;
+    const isActive = key === active;
+    btn.classList.toggle('bg-card-bg', isActive);
+    btn.classList.toggle('text-primary', isActive);
+    btn.classList.toggle('shadow-soft', isActive);
+    btn.classList.toggle('text-gray-500', !isActive);
+  });
+}
+function filterTasks(scope) {
+  // Only one task exists now; demo filter by data-status
+  const items = moList.querySelectorAll('button[data-status]');
+  items.forEach(item => {
+    const status = item.getAttribute('data-status');
+    const show = scope === 'all' || scope === status || (scope === 'today' && status === 'today') || (scope === 'overdue' && status === 'overdue');
+    item.classList.toggle('hidden', !show);
+  });
+  setActiveTab(scope);
+}
+if (tabs.today && tabs.overdue && tabs.all) {
+  tabs.today.addEventListener('click', () => filterTasks('today'));
+  tabs.overdue.addEventListener('click', () => filterTasks('overdue'));
+  tabs.all.addEventListener('click', () => filterTasks('all'));
+}
+filterTasks('today');
+
+// Signature canvas draw
+const canvas = document.getElementById('signature-canvas');
+const ctx = canvas ? canvas.getContext('2d') : null;
+let drawing = false; let hasInk = false; let rect;
+function resizeCanvas() {
+  if (!canvas) return;
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  const displayWidth = canvas.clientWidth;
+  const displayHeight = canvas.clientHeight;
+  canvas.width = displayWidth * ratio;
+  canvas.height = displayHeight * ratio;
+  ctx.scale(ratio, ratio);
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#111827';
+  rect = canvas.getBoundingClientRect();
+}
+function point(e) {
+  if (e.touches && e.touches[0]) { return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top }; }
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+function startDraw(e) { drawing = true; hasInk = true; ctx.beginPath(); const p = point(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+function draw(e) { if (!drawing) return; const p = point(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+function endDraw() { drawing = false; updateSignatureState(true); }
+function updateSignatureState(fromInk) {
+  if (fromInk) {
+    isSigned = true;
+    signatureStatus.textContent = 'Signed successfully';
+    signatureStatus.classList.add('text-success');
+    document.querySelector('.signature-pad').classList.add('signed');
+    clearSignature.disabled = false;
+  }
+  updateSubmitButton();
+}
+if (canvas && ctx) {
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  window.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', endDraw);
+}
+if (clearSignature) {
+  clearSignature.addEventListener('click', () => {
+    if (!canvas) return;
+    const w = canvas.width, h = canvas.height; ctx.clearRect(0, 0, w, h);
+    isSigned = false; hasInk = false;
+    signatureStatus.textContent = 'Not signed';
+    signatureStatus.classList.remove('text-success');
+    document.querySelector('.signature-pad').classList.remove('signed');
+    clearSignature.disabled = true;
+    updateSubmitButton();
+  });
+}
+
+// View Checklist (read-only)
+function populateReadOnly() {
+  ;[1,2,3].forEach(q => {
+    const ansEl = document.getElementById('ro-ans-' + q);
+    const photosEl = document.getElementById('ro-photos-' + q);
+    const ans = state.answers[q];
+    const map = { pass: 'bg-success/10 text-success', fail: 'bg-danger/10 text-danger', na: 'bg-warning/10 text-warning' };
+    if (ansEl) {
+      ansEl.textContent = ans ? ans.toUpperCase() : '—';
+      ansEl.className = 'text-xs font-medium px-2 py-1 rounded ' + (ans ? map[ans] : 'bg-gray-100 text-gray-600');
+    }
+    if (photosEl) {
+      photosEl.innerHTML = (state.photos[q]||[]).map(src => '<img src="' + src + '" class="w-full h-20 object-cover rounded-lg">').join('');
+    }
+  });
+}
+const viewChecklistBtn = document.getElementById('view-checklist');
+if (viewChecklistBtn) {
+  viewChecklistBtn.addEventListener('click', () => {
+    populateReadOnly();
+    showScreen('readonly');
+  });
+}
+</script>
+
+
+</body></html>
+
