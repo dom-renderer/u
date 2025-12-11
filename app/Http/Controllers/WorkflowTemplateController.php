@@ -121,7 +121,7 @@ class WorkflowTemplateController extends Controller
                                 'trigger' => $stepData['trigger'] ?? 0,
                                 'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
                                 'dependency_steps' => json_encode([]),
-                                'is_entry_point' => isset($stepData['is_entry_point']) ? 1 : 0,
+                                'is_entry_point' => !empty($stepData['is_entry_point']) ? 1 : 0,
 
                                 'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
                                 'maker_turn_around_time_day' => $stepData['maker_turn_around_time_day'] ?? null,
@@ -234,7 +234,7 @@ class WorkflowTemplateController extends Controller
                                     'trigger' => $stepData['trigger'] ?? 0,
                                     'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
                                     'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? json_encode($stepData['dependency_steps'] ?? []) : json_encode([]),
-                                    'is_entry_point' => isset($stepData['is_entry_point']) ? 1 : 0,
+                                    'is_entry_point' => !empty($stepData['is_entry_point']) ? 1 : 0,
 
                                     'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
                                     'maker_turn_around_time_day' => $stepData['maker_turn_around_time_day'] ?? null,
@@ -275,7 +275,7 @@ class WorkflowTemplateController extends Controller
                                     'trigger' => $stepData['trigger'] ?? 0,
                                     'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
                                     'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? json_encode($stepData['dependency_steps'] ?? []) : json_encode([]),
-                                    'is_entry_point' => isset($stepData['is_entry_point']) ? 1 : 0,
+                                    'is_entry_point' => !empty($stepData['is_entry_point']) ? 1 : 0,
 
                                     'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
                                     'maker_turn_around_time_day' => $stepData['maker_turn_around_time_day'] ?? null,
@@ -491,7 +491,7 @@ class WorkflowTemplateController extends Controller
             foreach ($validated['sections'] as $sectionId => $sectionData) {
                 if (isset($sectionData['steps']) && is_array($sectionData['steps'])) {
                     foreach ($sectionData['steps'] as $stepId => $stepData) {
-                        $isEntryPoint = isset($stepData['is_entry_point']);
+                        $isEntryPoint = !empty($stepData['is_entry_point']);
 
                         if ($isEntryPoint) {
                             $validated['sections'][$sectionId]['steps'][$stepId]['dependency_steps'] = [];
