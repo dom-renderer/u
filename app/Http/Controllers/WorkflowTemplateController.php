@@ -432,16 +432,17 @@ class WorkflowTemplateController extends Controller
 
     protected function validateStore($request): array
     {
-        $finalArray = [];
+        $sectionsArray = [];
 
         if (!empty($request['data']) && is_array($request['data'])) {
-            foreach ($request['data'] as $row) {
-                $finalArray[] = $row;
+            // Preserve section IDs as keys
+            foreach ($request['data'] as $sectionId => $sectionData) {
+                $sectionsArray[$sectionId] = $sectionData;
             }
         }
 
         $finalArray = [
-            'sections' => $finalArray,
+            'sections' => $sectionsArray,
             'title' => $request['title'],
             'description' => $request['description'],
             'status' => $request['status']

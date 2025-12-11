@@ -300,6 +300,7 @@
                     @if(isset($step->section_id))
                         sections['{{ $step->section_id }}'].steps.push({
                             id: '{{ $step->id }}',
+                            record_id: {{ $step->id }},
                             globalNumber: {{ $step->step }},
                             step_name: '{{ $step->step_name }}',
                             department_id: '{{ $step->department_id }}',
@@ -1340,6 +1341,12 @@
                     const step = section.steps.find(s => String(s.id) === String(stepId));
 
                     if (step) {
+                        // Preserve record_id if it exists
+                        const recordIdInput = stepCard.find('input[name*="[record_id]"]');
+                        if (recordIdInput.length > 0 && recordIdInput.val()) {
+                            step.record_id = parseInt(recordIdInput.val()) || null;
+                        }
+
                         step.step_name = stepCard.find('input[name*="[step_name]"]').val() || '';
                         step.department_id = stepCard.find('select[name*="[department_id]"]').val() || '';
                         step.checklist_id = stepCard.find('select[name*="[checklist_id]"]').val() || '';
@@ -1584,9 +1591,25 @@
             $('#templateForm').on('submit', function (e) {
                 e.preventDefault();
 
-                if (currentSectionId && sections[currentSectionId]) {
-                    saveCurrentStepData(currentSectionId);
-                }
+                // Save data from all sections, not just the current one
+                Object.keys(sections).forEach(function(sectionId) {
+                    if (sections[sectionId]) {
+                        saveCurrentStepData(sectionId);
+                    }
+                });
+
+                // Ensure record_id is included in all steps before submission
+                Object.keys(sections).forEach(function(sectionId) {
+                    const section = sections[sectionId];
+                    if (section && section.steps) {
+                        section.steps.forEach(function(step) {
+                            // If step has a numeric id, use it as record_id
+                            if (step.id && !isNaN(step.id) && parseInt(step.id) > 0 && !step.record_id) {
+                                step.record_id = parseInt(step.id);
+                            }
+                        });
+                    }
+                });
 
                 if (validateForm()) {
                     $.ajax({
@@ -1596,15 +1619,9 @@
                             _token: "{{ csrf_token() }}",
                             data: sections,
                             _method: 'PUT',
-                            title: function () {
-                                return $('[name="title"]').val();
-                            },
-                            description: function () {
-                                return $('[name="description"]').val();
-                            },
-                            status: function () {
-                                return $('#status option:selected').val();
-                            }
+                            title: $('[name="title"]').val(),
+                            description: $('[name="description"]').val(),
+                            status: $('#status option:selected').val()
                         },
                         beforeSend: function () {
                             $('body').find('.LoaderSec').removeClass('d-none');
