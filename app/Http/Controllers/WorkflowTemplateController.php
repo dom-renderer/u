@@ -161,7 +161,7 @@ class WorkflowTemplateController extends Controller
                 }
                 if (!empty($mappedIds)) {
                     NewWorkflowTemplateItem::where('id', $stepId)->update([
-                        'dependency_steps' => $mappedIds
+                        'dependency_steps' => self::stringToInt($mappedIds)
                     ]);
                 }
             }
@@ -233,7 +233,7 @@ class WorkflowTemplateController extends Controller
                                     'turn_around_time' => $stepData['turn_around_time'] ?? null,
                                     'trigger' => $stepData['trigger'] ?? 0,
                                     'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
-                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? $stepData['dependency_steps'] ?? [] : [],
+                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? self::stringToInt($stepData['dependency_steps'] ?? []) : [],
                                     'is_entry_point' => filter_var($stepData['is_entry_point'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
 
                                     'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
@@ -274,7 +274,7 @@ class WorkflowTemplateController extends Controller
                                     'turn_around_time' => $stepData['turn_around_time'] ?? null,
                                     'trigger' => $stepData['trigger'] ?? 0,
                                     'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
-                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? $stepData['dependency_steps'] ?? [] : [],
+                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? self::stringToInt($stepData['dependency_steps'] ?? []) : [],
                                     'is_entry_point' => filter_var($stepData['is_entry_point'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
 
                                     'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
@@ -363,7 +363,7 @@ class WorkflowTemplateController extends Controller
                 'section_code' => $step->section_code,
                 'is_entry_point' => (bool) $step->is_entry_point,
                 'dependency' => $step->dependency,
-                'dependency_steps' => $step->dependency_steps ?? [],
+                'dependency_steps' => self::stringToInt($step->dependency_steps ?? []),
                 'department' => $step->department->name ?? null,
                 'checklist' => $step->checklist->name ?? null,
                 'maker' => $step->user ? ($step->user->name . ' ' . ($step->user->last_name ?? '')) : null,
@@ -382,7 +382,7 @@ class WorkflowTemplateController extends Controller
 
         // Create links based on dependencies
         foreach ($template->children as $step) {
-            $dependencySteps = $step->dependency_steps ?? [];
+            $dependencySteps = self::stringToInt($step->dependency_steps ?? []);
 
             if (!empty($dependencySteps) && is_array($dependencySteps)) {
                 foreach ($dependencySteps as $parentStepId) {
@@ -497,7 +497,7 @@ class WorkflowTemplateController extends Controller
                             $validated['sections'][$sectionId]['steps'][$stepId]['dependency_steps'] = [];
                             $validated['sections'][$sectionId]['steps'][$stepId]['dependency'] = 'ALL_COMPLETED';
                         } elseif (($stepData['dependency'] ?? 'ALL_COMPLETED') === 'SELECTED_COMPLETED') {
-                            $validated['sections'][$sectionId]['steps'][$stepId]['dependency_steps'] = array_values(array_unique(array_filter($stepData['dependency_steps'] ?? [])));
+                            $validated['sections'][$sectionId]['steps'][$stepId]['dependency_steps'] = self::stringToInt(array_values(array_unique(array_filter($stepData['dependency_steps'] ?? []))));
                         } else {
                             $validated['sections'][$sectionId]['steps'][$stepId]['dependency_steps'] = [];
                         }
@@ -534,5 +534,9 @@ class WorkflowTemplateController extends Controller
                 'more' => $data->hasMorePages()
             ]
         ]);
+    }
+
+    public static function stringToInt($array) {
+        return array_map('intval', $array);
     }
 }
