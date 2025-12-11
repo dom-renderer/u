@@ -120,7 +120,7 @@ class WorkflowTemplateController extends Controller
                                 'turn_around_time' => $stepData['turn_around_time'] ?? null,
                                 'trigger' => $stepData['trigger'] ?? 0,
                                 'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
-                                'dependency_steps' => json_encode([]),
+                                'dependency_steps' => [],
                                 'is_entry_point' => filter_var($stepData['is_entry_point'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
 
                                 'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
@@ -161,7 +161,7 @@ class WorkflowTemplateController extends Controller
                 }
                 if (!empty($mappedIds)) {
                     NewWorkflowTemplateItem::where('id', $stepId)->update([
-                        'dependency_steps' => json_encode($mappedIds)
+                        'dependency_steps' => $mappedIds
                     ]);
                 }
             }
@@ -233,7 +233,7 @@ class WorkflowTemplateController extends Controller
                                     'turn_around_time' => $stepData['turn_around_time'] ?? null,
                                     'trigger' => $stepData['trigger'] ?? 0,
                                     'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
-                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? json_encode($stepData['dependency_steps'] ?? []) : json_encode([]),
+                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? $stepData['dependency_steps'] ?? [] : [],
                                     'is_entry_point' => filter_var($stepData['is_entry_point'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
 
                                     'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
@@ -274,7 +274,7 @@ class WorkflowTemplateController extends Controller
                                     'turn_around_time' => $stepData['turn_around_time'] ?? null,
                                     'trigger' => $stepData['trigger'] ?? 0,
                                     'dependency' => $stepData['dependency'] ?? 'ALL_COMPLETED',
-                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? json_encode($stepData['dependency_steps'] ?? []) : json_encode([]),
+                                    'dependency_steps' => $stepData['dependency'] === 'SELECTED_COMPLETED' ? $stepData['dependency_steps'] ?? [] : [],
                                     'is_entry_point' => filter_var($stepData['is_entry_point'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
 
                                     'maker_escalation_user_id' => $stepData['maker_escalation_user_id'] ?? null,
