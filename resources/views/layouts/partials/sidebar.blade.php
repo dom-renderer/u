@@ -121,7 +121,7 @@
                 </li>
                 @endif               
 
-                @if(auth()->user()->can('workflow-checklists.index'))
+                @if(auth()->user()->can('workflow-checklists.index') || auth()->user()->can('workflow-templates.index') || auth()->user()->can('workflow-assignments.index'))
                 <li class="nav-item">
                     <a href="#" class="nav-link"> Workflow Management <i class="bi bi-chevron-down"></i></a>
                     <ul class="nav nav-dropdown">
@@ -130,6 +130,9 @@
                         @endif
                         @if(auth()->user()->can('workflow-templates.index'))
                             <li class="nav-item"><a href="{{ route('workflow-templates.index') }}" class="nav-link"> Templates </a></li>
+                        @endif
+                        @if(auth()->user()->can('workflow-assignments.index'))
+                            <li class="nav-item"><a href="{{ route('workflow-assignments.index') }}" class="nav-link"> Assignments </a></li>
                         @endif
                     </ul>
                 </li>

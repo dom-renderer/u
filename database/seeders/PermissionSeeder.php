@@ -140,6 +140,14 @@ class PermissionSeeder extends Seeder
             'workflow-templates.update' => 'Update Workflow Template',
             'workflow-templates.destroy' => 'Delete Workflow Template',
 
+            'workflow-assignments.index' => 'View Workflow Assignments',
+            'workflow-assignments.create' => 'Create Workflow Assignment',
+            'workflow-assignments.store' => 'Save Workflow Assignment',
+            'workflow-assignments.show' => 'Show Workflow Assignment',
+            'workflow-assignments.edit' => 'Edit Workflow Assignment',
+            'workflow-assignments.update' => 'Update Workflow Assignment',
+            'workflow-assignments.destroy' => 'Delete Workflow Assignment',
+
             'topics.index' => 'View LMS Category',
             'topics.create' => 'Create LMS Category',
             'topics.store' => 'Save LMS Category',
